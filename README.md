@@ -41,8 +41,7 @@ This repository provides a complete pipeline and web-based interface for predict
 
 *Figure 1: Example screenshot of the immune age prediction WebUI interface.*
 
-![WebUI Example](docs/webui_example.png)  
-*(Please replace with your actual screenshot.)*
+![WebUI Example](webui_example.png)  
 
 ## File Structure
 
