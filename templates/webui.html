@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebUI for immune age prediction</title>
+    <style>
+        body {
+            background: #f7f9fa;
+            font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background: #fff;
+            max-width: 520px;
+            margin: 40px auto 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 36px 32px 32px 32px;
+        }
+        h2 {
+            text-align: center;
+            color: #2b7cff;
+            margin-bottom: 28px;
+        }
+        form {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 16px;
+        }
+        input[type="number"] {
+            width: 180px;
+            padding: 6px 10px;
+            border: 1px solid #cfd8dc;
+            border-radius: 5px;
+            font-size: 15px;
+            margin-left: 8px;
+        }
+        input[type="submit"] {
+            background: #2b7cff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 32px;
+            font-size: 17px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        input[type="submit"]:hover {
+            background: #185bb5;
+        }
+        .result {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 18px;
+            font-size: 20px;
+            text-align: center;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 18px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .shap-container {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 18px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>WebUI for immune age prediction</h2>
+        <form method="post">
+            {% for feat in selected_features %}
+                <label>{{ feat }}: 
+                    <input type="number" step="any" name="{{ feat }}" value="{{ user_values[feat] }}">
+                </label>
+            {% endfor %}
+            <input type="submit" value="Predict the immune age">
+        </form>
+        {% if pred_age is not none %}
+            <div class="result">The predicted immune age is: {{ "%.2f"|format(pred_age) }}</div>
+        {% endif %}
+        {% if force_plot_html %}
+            <div class="shap-container">{{ force_plot_html|safe }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
