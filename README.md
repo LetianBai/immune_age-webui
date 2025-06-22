@@ -37,6 +37,10 @@ This repository provides a complete pipeline and web-based interface for predict
 - Enter the required lymphocyte subpopulation values.
 - Click "Predict" to obtain the immune age and view the SHAP-based feature contribution plot.
 
+## Data Availability and Privacy
+
+*To protect participant privacy, the original raw flow cytometry files used for model training are not included in this repository. Processed data files will be made available after the publication of the related manuscript.*
+
 ## Example
 
 *Figure 1: Example screenshot of the immune age prediction WebUI interface.*
