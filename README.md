@@ -36,6 +36,7 @@ This repository provides a complete pipeline and web-based interface for predict
 - Open the WebUI in your browser.
 - Enter the required lymphocyte subpopulation values.
 - Click "Predict" to obtain the immune age and view the SHAP-based feature contribution plot.
+- For online use, please visit [https://immuneage.pragtherapy.com/].
 
 ## Data Availability and Privacy
 
