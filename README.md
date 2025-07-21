@@ -22,7 +22,7 @@ This repository provides a complete pipeline and web-based interface for predict
    ```
 
 3. **Prepare model artifacts:**
-   - Place `model.pkl`, `scaler_final.pkl`, `background.npy`, and (optionally) `selected_features.csv` in the project root.
+   - Place `model.pkl`, `scaler_final.pkl`, `background.npy` in the project root.
    - If you wish to retrain the model, refer to the provided Jupyter notebook for the full pipeline.
 
 4. **Run the WebUI:**
