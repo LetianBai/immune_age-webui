@@ -12,8 +12,8 @@ This repository provides a complete pipeline and web-based interface for predict
 
 1. **Clone the repository:**
    ```
-   git clone https://github.com/LetianBai/immune_age-webui/.git
-   cd immune-age-webui
+   git clone https://github.com/LetianBai/immune_age-webui.git
+   cd immune_age-webui
    ```
 
 2. **Install dependencies:**
