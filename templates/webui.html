@@ -1,103 +1,1166 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>WebUI for immune age prediction</title>
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Immune Age Prediction | 免疫年龄预测</title>
+    <meta
+      name="description"
+      content="AI-powered immune age prediction based on peripheral blood lymphocyte subsets"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            background: #f7f9fa;
-            font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+      /* ==================== CSS Variables & Theme System ==================== */
+      :root {
+        --font-display: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-body:
+          "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-serif;
+
+        /* Transitions */
+        --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Dark Theme (Default) */
+      [data-theme="dark"] {
+        --bg-gradient-1: #0a0f1c;
+        --bg-gradient-2: #1a1040;
+        --bg-gradient-3: #0d2a2d;
+
+        --card-bg: rgba(20, 30, 50, 0.6);
+        --card-border: rgba(100, 200, 255, 0.15);
+        --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+        --text-primary: #f0f4f8;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+
+        --accent-primary: #00d4aa;
+        --accent-secondary: #7c3aed;
+        --accent-tertiary: #06b6d4;
+        --accent-glow: rgba(0, 212, 170, 0.4);
+        --accent-glow-secondary: rgba(124, 58, 237, 0.3);
+
+        --input-bg: rgba(15, 23, 42, 0.8);
+        --input-border: rgba(100, 200, 255, 0.2);
+        --input-focus-border: var(--accent-primary);
+        --input-focus-glow: rgba(0, 212, 170, 0.25);
+
+        --success-bg: rgba(0, 212, 170, 0.15);
+        --success-border: var(--accent-primary);
+        --error-bg: rgba(239, 68, 68, 0.15);
+        --error-border: #ef4444;
+
+        --decoration-opacity: 0.08;
+      }
+
+      /* Light Theme */
+      [data-theme="light"] {
+        --bg-gradient-1: #f8fafc;
+        --bg-gradient-2: #e0f2fe;
+        --bg-gradient-3: #ecfdf5;
+
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --card-border: rgba(0, 100, 150, 0.12);
+        --card-shadow: 0 8px 32px rgba(0, 50, 100, 0.12);
+
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+
+        --accent-primary: #0891b2;
+        --accent-secondary: #7c3aed;
+        --accent-tertiary: #059669;
+        --accent-glow: rgba(8, 145, 178, 0.2);
+        --accent-glow-secondary: rgba(124, 58, 237, 0.15);
+
+        --input-bg: rgba(255, 255, 255, 0.9);
+        --input-border: rgba(0, 100, 150, 0.2);
+        --input-focus-border: var(--accent-primary);
+        --input-focus-glow: rgba(8, 145, 178, 0.2);
+
+        --success-bg: rgba(5, 150, 105, 0.1);
+        --success-border: var(--accent-tertiary);
+        --error-bg: rgba(239, 68, 68, 0.1);
+        --error-border: #dc2626;
+
+        --decoration-opacity: 0.06;
+      }
+
+      /* ==================== Reset & Base Styles ==================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        font-family: var(--font-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+        transition:
+          background var(--transition-base),
+          color var(--transition-base);
+      }
+
+      /* ==================== Animated Background ==================== */
+      .bg-animated {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(
+          135deg,
+          var(--bg-gradient-1) 0%,
+          var(--bg-gradient-2) 50%,
+          var(--bg-gradient-3) 100%
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% 50%;
         }
-        .container {
-            background: #fff;
-            max-width: 520px;
-            margin: 40px auto 0 auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            padding: 36px 32px 32px 32px;
+        50% {
+          background-position: 100% 50%;
         }
-        h2 {
-            text-align: center;
-            color: #2b7cff;
-            margin-bottom: 28px;
+      }
+
+      /* Decorative Elements */
+      .bg-decoration {
+        position: fixed;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .deco-circle {
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          var(--accent-primary) 0%,
+          transparent 70%
+        );
+        opacity: var(--decoration-opacity);
+        filter: blur(80px);
+      }
+
+      .deco-circle-1 {
+        top: -200px;
+        right: -200px;
+        animation: float 20s ease-in-out infinite;
+      }
+
+      .deco-circle-2 {
+        bottom: -300px;
+        left: -200px;
+        background: radial-gradient(
+          circle,
+          var(--accent-secondary) 0%,
+          transparent 70%
+        );
+        animation: float 25s ease-in-out infinite reverse;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
         }
-        form {
-            margin-bottom: 18px;
+        50% {
+          transform: translate(30px, -30px) scale(1.1);
         }
-        label {
-            display: block;
-            margin-bottom: 12px;
-            color: #333;
-            font-size: 16px;
+      }
+
+      /* DNA Pattern Decoration */
+      .dna-pattern {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        opacity: var(--decoration-opacity);
+        background-image:
+          radial-gradient(
+            circle at 20% 30%,
+            var(--accent-primary) 2px,
+            transparent 2px
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            var(--accent-secondary) 2px,
+            transparent 2px
+          ),
+          radial-gradient(
+            circle at 40% 80%,
+            var(--accent-tertiary) 2px,
+            transparent 2px
+          );
+        background-size: 100px 100px;
+        animation: dnaFloat 30s linear infinite;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      @keyframes dnaFloat {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
         }
-        input[type="number"] {
-            width: 180px;
-            padding: 6px 10px;
-            border: 1px solid #cfd8dc;
-            border-radius: 5px;
-            font-size: 15px;
-            margin-left: 8px;
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
         }
-        input[type="submit"] {
-            background: #2b7cff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 32px;
-            font-size: 17px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
+      }
+
+      /* ==================== Layout ==================== */
+      .app-container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 20px 100px;
+        position: relative;
+      }
+
+      @media (min-width: 768px) {
+        .app-container {
+          padding: 48px 32px;
         }
-        input[type="submit"]:hover {
-            background: #185bb5;
+      }
+
+      /* ==================== Header ==================== */
+      .app-header {
+        text-align: center;
+        margin-bottom: 32px;
+        position: relative;
+      }
+
+      .theme-toggle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 50px;
+        padding: 8px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        transition: all var(--transition-base);
+        backdrop-filter: blur(10px);
+      }
+
+      .theme-toggle:hover {
+        background: var(--accent-primary);
+        color: #fff;
+        border-color: var(--accent-primary);
+        transform: scale(1.05);
+      }
+
+      .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .logo-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-secondary)
+        );
+        border-radius: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 8px 24px var(--accent-glow);
+        animation: pulse 3s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 8px 24px var(--accent-glow);
         }
-        .result {
-            background: #e3f2fd;
-            color: #1565c0;
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 18px;
-            font-size: 20px;
-            text-align: center;
+        50% {
+          box-shadow:
+            0 12px 40px var(--accent-glow),
+            0 0 60px var(--accent-glow-secondary);
         }
-        .error {
-            background: #ffebee;
-            color: #c62828;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 18px;
-            font-size: 16px;
-            text-align: center;
+      }
+
+      .logo-icon svg {
+        width: 40px;
+        height: 40px;
+        color: #fff;
+      }
+
+      .app-title {
+        font-family: var(--font-display);
+        font-size: clamp(28px, 6vw, 42px);
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-tertiary) 50%,
+          var(--accent-secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+      }
+
+      .app-subtitle {
+        color: var(--text-secondary);
+        font-size: 16px;
+        font-weight: 400;
+      }
+
+      /* ==================== Glass Card ==================== */
+      .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: var(--card-shadow);
+        transition: all var(--transition-base);
+        margin-bottom: 24px;
+      }
+
+      .glass-card:hover {
+        border-color: var(--accent-primary);
+        box-shadow:
+          var(--card-shadow),
+          0 0 40px var(--accent-glow);
+      }
+
+      @media (min-width: 768px) {
+        .glass-card {
+          padding: 36px;
         }
-        .shap-container {
-            background: #f5f5f5;
-            border-radius: 8px;
-            padding: 18px;
-            margin-top: 18px;
-            overflow-x: auto;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .card-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-secondary)
+        );
+        border-radius: 12px;
+        color: #fff;
+      }
+
+      .card-icon svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .card-title {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .card-description {
+        color: var(--text-secondary);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      /* ==================== Form Styles ==================== */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 768px) {
+        .form-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
         }
+      }
+
+      .form-group {
+        position: relative;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        transition: color var(--transition-base);
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 16px 20px;
+        background: var(--input-bg);
+        border: 1.5px solid var(--input-border);
+        border-radius: 14px;
+        font-family: var(--font-body);
+        font-size: 16px;
+        color: var(--text-primary);
+        transition: all var(--transition-base);
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      .form-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-input:hover {
+        border-color: var(--accent-tertiary);
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        box-shadow: 0 0 0 4px var(--input-focus-glow);
+      }
+
+      .form-input:focus + .input-glow {
+        opacity: 1;
+      }
+
+      .input-glow {
+        position: absolute;
+        bottom: -1px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent-primary),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity var(--transition-base);
+        pointer-events: none;
+      }
+
+      /* Remove spinner buttons from number inputs */
+      .form-input[type="number"]::-webkit-outer-spin-button,
+      .form-input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .form-input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      /* ==================== Submit Button ==================== */
+      .submit-section {
+        margin-top: 28px;
+      }
+
+      .btn-submit {
+        width: 100%;
+        padding: 18px 32px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-tertiary)
+        );
+        border: none;
+        border-radius: 16px;
+        font-family: var(--font-display);
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all var(--transition-base);
+        box-shadow: 0 4px 20px var(--accent-glow);
+      }
+
+      .btn-submit::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px var(--accent-glow);
+      }
+
+      .btn-submit:hover::before {
+        left: 100%;
+      }
+
+      .btn-submit:active {
+        transform: translateY(-1px);
+      }
+
+      .btn-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .btn-content svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      /* ==================== Result Section ==================== */
+      .result-section {
+        animation: slideUp 0.5s var(--transition-bounce);
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result-card {
+        background: var(--success-bg);
+        border: 1.5px solid var(--success-border);
+        padding: 32px;
+        text-align: center;
+      }
+
+      .result-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+
+      .result-value {
+        font-family: var(--font-display);
+        font-size: clamp(48px, 10vw, 72px);
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-tertiary)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .result-unit {
+        font-size: 18px;
+        color: var(--text-secondary);
+      }
+
+      .result-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 16px;
+        padding: 8px 16px;
+        background: var(--accent-glow);
+        border-radius: 50px;
+        font-size: 13px;
+        color: var(--accent-primary);
+      }
+
+      .result-badge svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* Error State */
+      .error-card {
+        background: var(--error-bg);
+        border-color: var(--error-border);
+        color: var(--error-border);
+      }
+
+      .error-card .result-value {
+        font-size: 18px;
+        background: none;
+        -webkit-text-fill-color: var(--error-border);
+        color: var(--error-border);
+      }
+
+      /* ==================== SHAP Visualization ==================== */
+      .shap-section {
+        margin-top: 24px;
+      }
+
+      .shap-container {
+        background: var(--input-bg);
+        border-radius: 16px;
+        padding: 20px;
+        overflow-x: auto;
+        margin-top: 16px;
+      }
+
+      /* ==================== Footer Info ==================== */
+      .footer-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 24px;
+        margin-top: 40px;
+        padding-top: 24px;
+        border-top: 1px solid var(--card-border);
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+
+      .info-item svg {
+        width: 18px;
+        height: 18px;
+        color: var(--accent-primary);
+      }
+
+      .info-link {
+        color: var(--accent-primary);
+        text-decoration: none;
+        transition: color var(--transition-base);
+      }
+
+      .info-link:hover {
+        color: var(--accent-tertiary);
+        text-decoration: underline;
+      }
+
+      /* ==================== Mobile Bottom Bar ==================== */
+      @media (max-width: 639px) {
+        .submit-section {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 16px 20px;
+          background: var(--card-bg);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-top: 1px solid var(--card-border);
+          z-index: 100;
+          margin-top: 0;
+        }
+
+        .app-container {
+          padding-bottom: 120px;
+        }
+      }
+
+      /* ==================== Loading Animation ==================== */
+      .loading {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .loading.active {
+        display: flex;
+      }
+
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 3px solid var(--card-border);
+        border-top-color: var(--accent-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ==================== Feature Count Badge ==================== */
+      .feature-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--accent-glow);
+        border-radius: 50px;
+        font-size: 14px;
+        color: var(--accent-primary);
+        margin-bottom: 24px;
+      }
+
+      .feature-badge svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* ==================== Accessibility ==================== */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Focus visible for keyboard navigation */
+      :focus-visible {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 2px;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h2>WebUI for immune age prediction</h2>
-        <form method="post">
-            {% for feat in selected_features %}
-                <label>{{ feat }}: 
-                    <input type="number" step="any" name="{{ feat }}" value="{{ user_values[feat] }}">
-                </label>
-            {% endfor %}
-            <input type="submit" value="Predict the immune age">
-        </form>
-        {% if pred_age is not none %}
-            <div class="result">The predicted immune age is: {{ "%.2f"|format(pred_age) }}</div>
-        {% endif %}
-        {% if force_plot_html %}
-            <div class="shap-container">{{ force_plot_html|safe }}</div>
-        {% endif %}
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="bg-animated"></div>
+    <div class="bg-decoration deco-circle deco-circle-1"></div>
+    <div class="bg-decoration deco-circle deco-circle-2"></div>
+    <div class="dna-pattern"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loadingOverlay">
+      <div class="loading-spinner"></div>
     </div>
-</body>
+
+    <div class="app-container">
+      <!-- Header -->
+      <header class="app-header">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg
+            class="sun-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+            />
+          </svg>
+          <span class="theme-label">Theme</span>
+        </button>
+
+        <div class="logo-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </div>
+        <h1 class="app-title">Immune Age Prediction</h1>
+        <p class="app-subtitle">
+          AI-powered prediction based on peripheral blood lymphocyte subsets
+        </p>
+      </header>
+
+      <!-- About Section -->
+      <section class="glass-card" aria-labelledby="about-title">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+          </div>
+          <h2 class="card-title" id="about-title">About This Model</h2>
+        </div>
+        <p class="card-description">
+          This is a machine learning-based immune age prediction model. Immune
+          age is an important indicator for assessing the functional status of
+          an individual's immune system and is closely related to various
+          disease risks and health conditions.
+        </p>
+        <p class="card-description" style="margin-top: 12px">
+          The model was trained using peripheral blood lymphocyte subset data
+          from 124 healthy adults at the Second Affiliated Hospital of Soochow
+          University (Ethical Approval No.: JD-LK2023013-IR01).
+        </p>
+      </section>
+
+      <!-- Input Form -->
+      <section class="glass-card" aria-labelledby="input-title">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+              />
+              <path
+                d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+              />
+            </svg>
+          </div>
+          <h2 class="card-title" id="input-title">Input Parameters</h2>
+        </div>
+
+        <div class="feature-badge">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          {% if selected_features %}{{ selected_features|length }}{% endif %}
+          lymphocyte subset indicators
+        </div>
+
+        <form method="post" id="predictionForm">
+          <div class="form-grid">
+            {% for feat in selected_features %}
+            <div class="form-group">
+              <label class="form-label" for="{{ feat }}">{{ feat }}</label>
+              <input
+                type="number"
+                step="any"
+                class="form-input"
+                id="{{ feat }}"
+                name="{{ feat }}"
+                value="{{ user_values[feat] }}"
+                placeholder="Enter value..."
+                inputmode="decimal"
+                required
+              />
+              <div class="input-glow"></div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="submit-section">
+            <button type="submit" class="btn-submit">
+              <span class="btn-content">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                Predict Immune Age
+              </span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results Section -->
+      {% if pred_age != none %}
+      <section
+        class="result-section glass-card result-card"
+        aria-labelledby="result-title"
+      >
+        <p class="result-label" id="result-title">Predicted Immune Age</p>
+        <p class="result-value">{{ "%.1f"|format(pred_age) }}</p>
+        <p class="result-unit">years</p>
+        <div class="result-badge">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          Prediction Complete
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Error Display -->
+      {% if force_plot_html and 'error' in force_plot_html.lower() %}
+      <section class="glass-card result-card error-card">
+        <p class="result-value">{{ force_plot_html|safe }}</p>
+      </section>
+      {% endif %}
+
+      <!-- SHAP Visualization -->
+      {% if force_plot_html and 'error' not in force_plot_html.lower() %}
+      <section class="glass-card shap-section" aria-labelledby="shap-title">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+          </div>
+          <h2 class="card-title" id="shap-title">
+            Feature Contribution Analysis
+          </h2>
+        </div>
+        <div class="shap-container">{{ force_plot_html|safe }}</div>
+      </section>
+      {% endif %}
+
+      <!-- Footer -->
+      <footer class="footer-info">
+        <div class="info-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>Total visitors: <strong>{{ visitor_count }}</strong></span>
+        </div>
+        <div class="info-item">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+            />
+          </svg>
+          <a
+            href="https://github.com/LetianBai/immune_age-webui"
+            target="_blank"
+            rel="noopener"
+            class="info-link"
+            >View on GitHub</a
+          >
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Theme Toggle
+      const themeToggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const themeLabel = themeToggle.querySelector('.theme-label');
+
+      // Check for saved theme preference or system preference
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (savedTheme) {
+          html.setAttribute('data-theme', savedTheme);
+      } else if (!systemPrefersDark) {
+          html.setAttribute('data-theme', 'light');
+      }
+
+      function updateThemeLabel() {
+          const currentTheme = html.getAttribute('data-theme');
+          themeLabel.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+      }
+
+      updateThemeLabel();
+
+      themeToggle.addEventListener('click', () => {
+          const currentTheme = html.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+          updateThemeLabel();
+      });
+
+      // Form Loading State
+      const form = document.getElementById('predictionForm');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+
+      form.addEventListener('submit', () => {
+          loadingOverlay.classList.add('active');
+      });
+
+      // Input validation visual feedback with range checking
+      const inputs = document.querySelectorAll('.form-input');
+      const inputsArray = Array.from(inputs);
+      
+      // Validation function: first field has no range limit, others must be 0-100
+      function validateInput(input, index) {
+          const value = parseFloat(input.value);
+          if (input.value === '') {
+              return { valid: false, error: 'empty' };
+          }
+          if (isNaN(value)) {
+              return { valid: false, error: 'not_number' };
+          }
+          // Index > 0 means it's a percentage field (must be 0-100)
+          if (index > 0 && (value < 0 || value > 100)) {
+              return { valid: false, error: 'out_of_range' };
+          }
+          return { valid: true };
+      }
+      
+      inputs.forEach((input, index) => {
+          input.addEventListener('input', function() {
+              const result = validateInput(this, index);
+              if (result.valid) {
+                  this.style.borderColor = 'var(--accent-primary)';
+                  this.setCustomValidity('');
+              } else if (result.error === 'out_of_range') {
+                  this.style.borderColor = 'var(--error-border)';
+                  this.setCustomValidity('Value must be between 0 and 100');
+              } else if (result.error === 'not_number') {
+                  this.style.borderColor = 'var(--error-border)';
+                  this.setCustomValidity('Please enter a valid number');
+              } else {
+                  this.style.borderColor = '';
+                  this.setCustomValidity('');
+              }
+          });
+          
+          // Also validate on blur for better UX
+          input.addEventListener('blur', function() {
+              const result = validateInput(this, index);
+              if (result.error === 'out_of_range') {
+                  alert(`${this.previousElementSibling.textContent.replace(':', '')} must be between 0 and 100`);
+              }
+          });
+      });
+      
+      // Form submission validation
+      form.addEventListener('submit', function(e) {
+          let hasErrors = false;
+          let errorMessages = [];
+          
+          inputsArray.forEach((input, index) => {
+              const result = validateInput(input, index);
+              if (!result.valid) {
+                  hasErrors = true;
+                  const fieldName = input.previousElementSibling.textContent.replace(':', '');
+                  if (result.error === 'out_of_range') {
+                      errorMessages.push(`${fieldName}: value must be 0-100`);
+                  } else if (result.error === 'empty') {
+                      errorMessages.push(`${fieldName}: required`);
+                  } else if (result.error === 'not_number') {
+                      errorMessages.push(`${fieldName}: invalid number`);
+                  }
+                  input.style.borderColor = 'var(--error-border)';
+              }
+          });
+          
+          if (hasErrors) {
+              e.preventDefault();
+              alert('Please fix the following errors:\n\n' + errorMessages.join('\n'));
+              return false;
+          }
+          
+          loadingOverlay.classList.add('active');
+      });
+
+      // Smooth scroll to results
+      {% if pred_age is not none %}
+      document.addEventListener('DOMContentLoaded', () => {
+          const resultSection = document.querySelector('.result-section');
+          if (resultSection) {
+              setTimeout(() => {
+                  resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 300);
+          }
+      });
+      {% endif %}
+    </script>
+  </body>
 </html>
